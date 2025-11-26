@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Formatura</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: #1a1a1a;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid #333;
+        }
+
+        .header h1 {
+            color: #ecf0f1;
+            font-size: 28px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            border: 1px solid #34495e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 73, 94, 0.6);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+
+        .btn-secondary {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border: 2px solid #34495e;
+        }
+
+        .btn-secondary:hover {
+            background: #34495e;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a93226;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219653;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .room-card {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #333;
+            color: #ecf0f1;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border-color: #444;
+        }
+
+        .room-card h3 {
+            color: #ecf0f1;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .room-card p {
+            color: #bdc3c7;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .room-code {
+            background: #2c3e50;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 16px;
+            color: #ecf0f1;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 1px solid #34495e;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #333;
+            color: #ecf0f1;
+        }
+
+        .modal-content h2 {
+            color: #ecf0f1;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ecf0f1;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #95a5a6;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .room-view {
+            display: none;
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            color: #ecf0f1;
+        }
+
+        .room-view.active {
+            display: block;
+        }
+
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .room-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #34495e;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: #bdc3c7;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .notice-item,
+        .poll-item,
+        .vote-item {
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            color: #ecf0f1;
+        }
+
+        .notice-item h4,
+        .poll-item h4,
+        .vote-item h4 {
+            color: #ecf0f1;
+            margin-bottom: 10px;
+        }
+
+        .notice-item p,
+        .poll-item p,
+        .vote-item p {
+            color: #bdc3c7;
+            line-height: 1.6;
+        }
+
+        .poll-options,
+        .vote-options {
+            margin-top: 15px;
+        }
+
+        .poll-option,
+        .vote-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #34495e;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ecf0f1;
+        }
+
+        .poll-option:hover,
+        .vote-option:hover {
+            background: #3d566e;
+        }
+
+        .poll-option input,
+        .vote-option input {
+            cursor: pointer;
+        }
+
+        .poll-results,
+        .vote-results {
+            margin-top: 10px;
+        }
+
+        .result-bar {
+            background: #34495e;
+            height: 30px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .result-bar-fill {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .result-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+
+        .member-list {
+            list-style: none;
+        }
+
+        .member-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #2c3e50;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            color: #ecf0f1;
+            border: 1px solid #34495e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                text-align: center;
+                justify-content: center;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .room-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Organizador de Formatura</h1>
+            <div>
+                <button class="btn btn-secondary" onclick="showEnterCodeModal()">Entrar com Código</button>
+                <button class="btn btn-primary" onclick="showCreateRoomModal()">+ Criar Sala</button>
+            </div>
+        </div>
+
+     
+        <div id="roomsList">
+            <h2 style="color: #ecf0f1; margin-bottom: 20px;">Minhas Salas</h2>
+            <div class="rooms-grid" id="roomsGrid">
+                <div class="empty-state" style="background: #1a1a1a; border-radius: 15px; grid-column: 1/-1; border: 1px solid #333;">
+                    <p>Você ainda não tem nenhuma sala. Crie uma sala ou entre com um código!</p>
+                </div>
+            </div>
+        </div>
+
+       
+        <div id="roomView" class="room-view">
+            
+        </div>
+
+        
+        <div id="createRoomModal" class="modal">
+            
+        </div>
+
+        
+    </div>
+
+    <script>
+        
+        let currentRoom = null;
+        let rooms = JSON.parse(localStorage.getItem('graduationRooms') || '[]');
+        let myRooms = JSON.parse(localStorage.getItem('myRooms') || '[]');
+
+       
+    </script>
+</body>
+</html>
