@@ -5,7 +5,7 @@ from firebase_admin import credentials, firestore
 app = Flask(__name__)
 app.secret_key = 'chave_secreta_123'
 
-# Configuração do Firebase
+
 try:
     if not firebase_admin._apps:
         cred = credentials.Certificate("firebase-config.json")
@@ -18,14 +18,14 @@ except Exception as e:
     print(f"Erro Firebase: {e}")
     db = None
 
-# Página inicial
+
 @app.route('/')
 def index():
     if 'user_email' in session:
         return render_template('principal.html')
     return redirect('/login')
 
-# Página de login - GET e POST
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -35,7 +35,7 @@ def login():
         if not email or not senha:
             return render_template('login.html', erro='Email e senha são obrigatórios')
         
-        # Verifica no Firebase
+     
         if db:
             users_ref = db.collection('users')
             query = users_ref.where('email', '==', email).limit(1)
@@ -51,10 +51,10 @@ def login():
         
         return render_template('login.html', erro='Email ou senha incorretos')
     
-    # Se for GET, mostra o formulário
+   
     return render_template('login.html')
 
-# Página de cadastro - GET e POST
+
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -63,7 +63,7 @@ def cadastro():
         senha = request.form.get('senha')
         confirma_senha = request.form.get('confirma_senha')
         
-        # Validações
+       
         if not all([nome, email, senha, confirma_senha]):
             return render_template('cadastro.html', erro='Todos os campos são obrigatórios')
         
@@ -73,7 +73,7 @@ def cadastro():
         if len(senha) < 6:
             return render_template('cadastro.html', erro='A senha deve ter pelo menos 6 caracteres')
         
-        # Salva no Firebase
+       
         if db:
             users_ref = db.collection('users')
             query = users_ref.where('email', '==', email).limit(1)
@@ -95,14 +95,15 @@ def cadastro():
             
             return redirect('/')
     
-    # Se for GET, mostra o formulário
+   
     return render_template('cadastro.html')
 
-# Logout
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/login')
 
 if __name__ == '__main__':
+
     app.run(debug=True, host='0.0.0.0', port=5000)
